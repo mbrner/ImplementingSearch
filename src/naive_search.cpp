@@ -5,14 +5,27 @@
 #include <seqan3/alphabet/nucleotide/dna5.hpp>
 #include <seqan3/argument_parser/all.hpp>
 #include <seqan3/core/debug_stream.hpp>
+#include <seqan3/core/debug_stream/debug_stream_type.hpp>
 #include <seqan3/io/sequence_file/all.hpp>
 #include <seqan3/search/fm_index/fm_index.hpp>
 #include <seqan3/search/search.hpp>
 
 // prints out all occurences of query inside of ref
 void findOccurences(std::vector<seqan3::dna5> const& ref, std::vector<seqan3::dna5> const& query) {
-    //!TODO ImplementMe
+    for (size_t i = 0; i < ref.size() - query.size() + 1; i++) {
+        bool match = true;
+        for (size_t j = 0; j < query.size(); j++) {
+            if (ref[i + j] != query[j]) {
+                match = false;
+                break;
+            }
+        }
+        if (match) {
+            seqan3::debug_stream << "Query: " << query << " occurs at position: " << i << " in the reference" << std::endl;
+        }
+    }
 }
+
 
 int main(int argc, char const* const* argv) {
     seqan3::argument_parser parser{"naive_search", argc, argv, seqan3::update_notifications::off};

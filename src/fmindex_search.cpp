@@ -52,9 +52,15 @@ int main(int argc, char const* const* argv) {
 
     //!TODO here adjust the number of searches
     queries.resize(100); // will reduce the amount of searches
+    
+    for (auto& q : queries) {
+        auto results = seqan3::search(q, index);
+    }
 
-
-    //!TODO !ImplementMe use the seqan3::search function to search
+    // Print out the results
+    for (auto &[first, last] : results) {
+        seqan3::debug_stream << "Query: " << query << " occurs at position: " << first << " in the reference" << std::endl;
+    }
 
     return 0;
 }
