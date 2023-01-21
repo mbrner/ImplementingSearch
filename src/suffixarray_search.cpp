@@ -1,6 +1,6 @@
 #include <divsufsort.h>
 #include <sstream>
-#include <seqan3/std/filesystem>
+#include <filesystem>
 
 #include <seqan3/alphabet/nucleotide/dna5.hpp>
 #include <seqan3/argument_parser/all.hpp>
@@ -10,6 +10,10 @@
 #include <seqan3/search/search.hpp>
 
 int main(int argc, char const* const* argv) {
+    using std::chrono::high_resolution_clock;
+    using std::chrono::duration_cast;
+    using std::chrono::duration;
+    using std::chrono::milliseconds;
     seqan3::argument_parser parser{"suffixarray_search", argc, argv, seqan3::update_notifications::off};
 
     parser.info.author = "SeqAn-Team";
@@ -20,6 +24,9 @@ int main(int argc, char const* const* argv) {
 
     auto query_file = std::filesystem::path{};
     parser.add_option(query_file, '\0', "query", "path to the query file");
+
+    unsigned long int query_length = 100;
+    parser.add_option(query_length, query_length, "query-lim", "query limit");
 
     try {
          parser.parse();
@@ -48,7 +55,7 @@ int main(int argc, char const* const* argv) {
     }
 
     //!TODO here adjust the number of searches
-    queries.resize(100); // will reduce the amount of searches
+    queries.resize(query_length); // will reduce the amount of searches
 
     // Array that should hold the future suffix array
     std::vector<saidx_t> suffixarray;
@@ -58,6 +65,7 @@ int main(int argc, char const* const* argv) {
     sauchar_t const* str = reinterpret_cast<sauchar_t const*>(reference.data());
     divsufsort(str, suffixarray.data(), reference.size());
 
+    auto t1 = high_resolution_clock::now();
     for (auto& q : queries) {
         // apply binary search and find q  in reference using binary search on `suffixarray`
         // using the naive approach
@@ -74,7 +82,7 @@ int main(int argc, char const* const* argv) {
             }
             if (equal) {
                 // q found at position suffixarray[mid]
-                seqan3::debug_stream << "Query: " << q << " occurs at position: suffixarray[mid] & mid=" << mid << std::endl;
+                // seqan3::debug_stream << "Query: " << q << " occurs at position: suffixarray[mid] & mid=" << mid << std::endl;
                 break;
             } else {
                 bool less = true;
@@ -94,5 +102,13 @@ int main(int argc, char const* const* argv) {
             }
         }
     }
+    auto t2 = high_resolution_clock::now();
+    duration<double, std::milli> ms_double = t2 - t1;
+    std::cout << ">>>>>" << std::endl;
+    std::cout << "> Method: Suffix-Array" << std::endl;
+    std::cout << "> Query File: " << query_file << std::endl;
+    std::cout << "> Query Limit: " << query_length << std::endl;
+    std::cout << "> Search duration: " << ms_double.count() << " ms\n";
+    std::cout << "<<<<" << std::endl;
     return 0;
 }
