@@ -1,6 +1,5 @@
 #include <divsufsort.h>
 #include <sstream>
-
 #include <seqan3/std/filesystem>
 
 #include <seqan3/alphabet/nucleotide/dna5.hpp>
@@ -55,17 +54,45 @@ int main(int argc, char const* const* argv) {
     std::vector<saidx_t> suffixarray;
     suffixarray.resize(reference.size()); // resizing the array, so it can hold the complete SA
 
-    //!TODO !ImplementMe implement suffix array sort
-    //Hint, if can use libdivsufsort (already integrated in this repo)
-    //      https://github.com/y-256/libdivsufsort
-    //      To make the `reference` compatible with libdivsufsort you can simply
-    //      cast it by calling:
-    //      `sauchar_t const* str = reinterpret_cast<sauchar_t const*>(reference.data());`
+    // Implement suffix array sort
+    sauchar_t const* str = reinterpret_cast<sauchar_t const*>(reference.data());
+    divsufsort(str, suffixarray.data(), reference.size());
 
     for (auto& q : queries) {
-        //!TODO !ImplementMe apply binary search and find q  in reference using binary search on `suffixarray`
-        // You can choose if you want to use binary search based on "naive approach", "mlr-trick", "lcp"
+        // apply binary search and find q  in reference using binary search on `suffixarray`
+        // using the naive approach
+        unsigned long int left = 0;
+        unsigned long int right = reference.size() - 1;
+        while (left <= right) {
+            auto mid = (left + right) / 2;
+            bool equal = true;
+            for (size_t i = 0; i < q.size(); ++i) {
+                if (q[i] != reference[suffixarray[mid] + i]) {
+                    equal = false;
+                    break;
+                }
+            }
+            if (equal) {
+                // q found at position suffixarray[mid]
+                seqan3::debug_stream << "Query: " << q << " occurs at position: suffixarray[mid] & mid=" << mid << std::endl;
+                break;
+            } else {
+                bool less = true;
+                for (size_t i = 0; i < q.size(); ++i) {
+                    if (q[i] != reference[suffixarray[mid] + i]) {
+                        if (q[i] > reference[suffixarray[mid] + i]) {
+                            less = false;
+                        }
+                        break;
+                    }
+                }
+                if (less) {
+                    right = mid - 1;
+                } else {
+                    left = mid + 1;
+                }
+            }
+        }
     }
-
     return 0;
 }

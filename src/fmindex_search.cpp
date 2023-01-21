@@ -52,11 +52,8 @@ int main(int argc, char const* const* argv) {
 
     //!TODO here adjust the number of searches
     queries.resize(100); // will reduce the amount of searches
-    using namespace seqan3::literals;
- 
-    seqan3::dna5_vector query = "ACGT"_dna5;
 
-    seqan3::debug_stream << search(query, index) << '\n';
+    seqan3::debug_stream << search(queries, index) << '\n';
     //for (auto& q : queries) {
     //    seqan3::debug_stream << search(q, index) << '\n';
     //}
