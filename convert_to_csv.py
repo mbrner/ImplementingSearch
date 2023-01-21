@@ -40,6 +40,8 @@ def parse_experiment_result(txt_file):
                 current_experiment = {}
             elif line.startswith('> Method: '):
                 current_experiment['method'] = line.replace('> Method: ', '').strip()
+            elif line.startswith('> Total Count: '):
+                current_experiment['hits'] = int(line.replace('> Total Count: ', '').strip())
             elif line.startswith('> Query File: '):
                 current_experiment['query_file'] = line.replace('> Query File: ', '').strip().lstrip('"').rstrip('"')
                 current_experiment['query_file'] = pathlib.Path(current_experiment['query_file'])      
