@@ -14,6 +14,8 @@ experiment_results.txt: run_experiments.sh fm.index $(ALL_BINARIES)
 experiment_results.csv: experiment_results.txt
 	python convert_to_csv.py experiment_results.txt
 
+compile: $(ALL_BINARIES)
+
 build:
 	mkdir build
 	cd build && cmake ..

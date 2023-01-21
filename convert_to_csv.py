@@ -56,7 +56,7 @@ def parse_experiment_result(txt_file):
 if __name__ == '__main__':
     import sys
     experiments_txt = pathlib.Path(sys.argv[1])
-    experiments = parse_experiment_result('experiment_results_old.txt')
+    experiments = parse_experiment_result(experiments_txt)
     keys = experiments[0].keys()
     result_csv = experiments_txt.parent / (experiments_txt.stem + '.csv')
 

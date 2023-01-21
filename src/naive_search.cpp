@@ -11,7 +11,8 @@
 #include <seqan3/search/search.hpp>
 
 // prints out all occurences of query inside of ref
-void findOccurences(std::vector<seqan3::dna5> const& ref, std::vector<seqan3::dna5> const& query) {
+unsigned int findOccurences(std::vector<seqan3::dna5> const& ref, std::vector<seqan3::dna5> const& query) {
+    unsigned int count = 0;
     for (size_t i = 0; i < ref.size() - query.size() + 1; i++) {
         bool match = true;
         for (size_t j = 0; j < query.size(); j++) {
@@ -21,9 +22,10 @@ void findOccurences(std::vector<seqan3::dna5> const& ref, std::vector<seqan3::dn
             }
         }
         if (match) {
-            // seqan3::debug_stream << "Query: " << query << " occurs at position: " << i << " in the reference" << std::endl;
+            count++;
         }
     }
+    return count;
 }
 
 
@@ -31,7 +33,7 @@ int main(int argc, char const* const* argv) {
     using std::chrono::high_resolution_clock;
     using std::chrono::duration_cast;
     using std::chrono::duration;
-    using std::chrono::milliseconds;
+    using std::chrono::nanoseconds;
     seqan3::argument_parser parser{"naive_search", argc, argv, seqan3::update_notifications::off};
 
     parser.info.author = "SeqAn-Team";
@@ -75,18 +77,20 @@ int main(int argc, char const* const* argv) {
 
     //! search for all occurences of queries inside of reference
     auto t1 = high_resolution_clock::now();
+    unsigned int total_count = 0;
     for (auto& r : reference) {
         for (auto& q : queries) {
-            findOccurences(r, q);
+            total_count += findOccurences(r, q);
         }
     }
     auto t2 = high_resolution_clock::now();
-    duration<double, std::nano> ms_double = t2 - t1;
+    auto t_diff = std::chrono::duration_cast<std::chrono::nanoseconds>(t2 - t1);
     std::cout << ">>>>>" << std::endl;
     std::cout << "> Method: Naive Search" << std::endl;
     std::cout << "> Query File: " << query_file << std::endl;
     std::cout << "> Query Limit: " << query_length << std::endl;
-    std::cout << "> Search duration: " << ms_double.count() << " ns\n";
+    std::cout << "> Total Count: " << total_count << std::endl;
+    std::cout << "> Search duration: " << t_diff.count() << " ns\n";
     std::cout << "<<<<" << std::endl;
 
     return 0;

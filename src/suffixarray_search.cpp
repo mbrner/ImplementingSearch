@@ -13,7 +13,6 @@ int main(int argc, char const* const* argv) {
     using std::chrono::high_resolution_clock;
     using std::chrono::duration_cast;
     using std::chrono::duration;
-    using std::chrono::milliseconds;
     using std::chrono::nanoseconds;
     seqan3::argument_parser parser{"suffixarray_search", argc, argv, seqan3::update_notifications::off};
 
@@ -65,7 +64,7 @@ int main(int argc, char const* const* argv) {
     // Implement suffix array sort
     sauchar_t const* str = reinterpret_cast<sauchar_t const*>(reference.data());
     divsufsort(str, suffixarray.data(), reference.size());
-
+    unsigned int total_count = 0;
     auto t1 = high_resolution_clock::now();
     for (auto& q : queries) {
         // apply binary search and find q  in reference using binary search on `suffixarray`
@@ -82,6 +81,7 @@ int main(int argc, char const* const* argv) {
                 }
             }
             if (equal) {
+                total_count++;
                 // q found at position suffixarray[mid]
                 // seqan3::debug_stream << "Query: " << q << " occurs at position: suffixarray[mid] & mid=" << mid << std::endl;
                 break;
@@ -104,12 +104,13 @@ int main(int argc, char const* const* argv) {
         }
     }
     auto t2 = high_resolution_clock::now();
-    duration<double, std::nano> ms_double = t2 - t1;
+    auto t_diff = std::chrono::duration_cast<std::chrono::nanoseconds>(t2 - t1);
     std::cout << ">>>>>" << std::endl;
     std::cout << "> Method: Suffix-Array" << std::endl;
     std::cout << "> Query File: " << query_file << std::endl;
     std::cout << "> Query Limit: " << query_length << std::endl;
-    std::cout << "> Search duration: " << ms_double.count() << " ns\n";
+    std::cout << "> Total Count: " << total_count << std::endl;
+    std::cout << "> Search duration: " << t_diff.count() << " ns\n";
     std::cout << "<<<<" << std::endl;
     return 0;
 }
