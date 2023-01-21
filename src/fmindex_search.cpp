@@ -14,6 +14,7 @@ int main(int argc, char const* const* argv) {
     using std::chrono::duration_cast;
     using std::chrono::duration;
     using std::chrono::milliseconds;
+    using std::chrono::nanoseconds;
     seqan3::argument_parser parser{"fmindex_search", argc, argv, seqan3::update_notifications::off};
 
     parser.info.author = "SeqAn-Team";
@@ -65,7 +66,7 @@ int main(int argc, char const* const* argv) {
     auto results = search(queries, index);
     auto t2 = high_resolution_clock::now();
     // seqan3::debug_stream << results ;   
-    duration<double, std::milli> ms_double = t2 - t1;
+    duration<double, std::nano> ms_double = t2 - t1;
     std::cout << ">>>>>" << std::endl;
     std::cout << "> Method: FM-Index" << std::endl;
     std::cout << "> Query File: " << query_file << std::endl;
