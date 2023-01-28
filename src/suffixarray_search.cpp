@@ -48,14 +48,17 @@ int main(int argc, char const* const* argv) {
         reference.insert(reference.end(), r.begin(), r.end());
     }
 
-    // read query into memory
+
     std::vector<std::vector<seqan3::dna5>> queries;
     for (auto& record : query_stream) {
         queries.push_back(record.sequence());
+        if (queries.size() == query_length) break;
     }
 
-    //!TODO here adjust the number of searches
-    queries.resize(query_length); // will reduce the amount of searches
+    size_t remaining = query_length - queries.size();
+    for (size_t i = 0; i < remaining; ++i) {
+        queries.push_back(queries[i]);
+    }
 
     // Array that should hold the future suffix array
     std::vector<saidx_t> suffixarray;
@@ -109,6 +112,7 @@ int main(int argc, char const* const* argv) {
     std::cout << "> Method: Suffix-Array" << std::endl;
     std::cout << "> Query File: " << query_file << std::endl;
     std::cout << "> Query Limit: " << query_length << std::endl;
+    std::cout << "> Excepted Errors: 0\n";
     std::cout << "> Total Count: " << total_count << std::endl;
     std::cout << "> Search duration: " << t_diff.count() << " ns\n";
     std::cout << "<<<<" << std::endl;

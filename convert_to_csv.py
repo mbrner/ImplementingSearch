@@ -46,6 +46,8 @@ def parse_experiment_result(txt_file):
                 current_experiment['query_file'] = line.replace('> Query File: ', '').strip().lstrip('"').rstrip('"')
                 current_experiment['query_file'] = pathlib.Path(current_experiment['query_file'])      
             elif line.startswith('> Query Limit: '):
+                current_experiment['error_total'] = int(line.replace('> Query Limit: ', '').lstrip('"').rstrip('"'))
+            elif line.startswith('> Excepted Errors: '):
                 current_experiment['query_limit'] = int(line.replace('> Query Limit: ', '').lstrip('"').rstrip('"'))
             elif line.startswith('> Search duration: '):
                 current_experiment['query_time_ms'] = parse_duration_str(line.replace('> Search duration: ', '').strip())
