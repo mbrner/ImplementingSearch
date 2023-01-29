@@ -11,7 +11,7 @@ experiment_results_assignment2_part2.txt: run_experiments_assignment2_part2.sh f
 	./run_experiments_assignment2_part2.sh > experiment_results_assignment2_part2.txt
 
 experiment_results_assignment2_part2.csv: experiment_results_assignment2_part2.txt
-	python3 convert_to_csv.py experiment_results_assignment2_part2.txt
+	python convert_to_csv.py experiment_results_assignment2_part2.txt
 
 fm_hg38_full.index: build/bin/fmindex_construct grch38/GCF_000001405.26_GRCh38_genomic.fna.gz
 	build/bin/fmindex_construct --reference grch38/GCF_000001405.26_GRCh38_genomic.fna.gz --index fm_hg38_full.index
@@ -22,7 +22,7 @@ grch38/GCF_000001405.26_GRCh38_genomic.fna.gz:
 ## Part 1
 
 experiment_results_assignment2_part1.csv: experiment_results_assignment2_part1.txt
-	python3 convert_to_csv.py experiment_results_assignment2_part1.txt
+	python convert_to_csv.py experiment_results_assignment2_part1.txt
 experiment_results_assignment2_part1.txt: run_experiments_assignment2_part1.sh fm_hg38.index $(ALL_BINARIES)
 	./run_experiments_assignment2_part1.sh > experiment_results_assignment2_part1.txt
 
@@ -30,7 +30,7 @@ experiment_results_assignment2_part1.txt: run_experiments_assignment2_part1.sh f
 assignment_1: experiment_results_assignment1.csv
 
 experiment_results_assignment1.csv: experiment_results_assignment1.txt
-	python3 convert_to_csv.py experiment_results_assignment1.txt
+	python convert_to_csv.py experiment_results_assignment1.txt
 experiment_results_assignment1.txt: run_experiments_assignment1.sh fm_hg38.index $(ALL_BINARIES)
 	./run_experiments_assignment1.sh > experiment_results_assignment1.txt
 fm_hg38.index: build/bin/fmindex_construct data/hg38_partial.fasta.gz
@@ -42,7 +42,7 @@ $(ALL_BINARIES): build $(ALL_SRCS)
 
 build:
 	mkdir build
-	cd build && cmake ..
+	cd build && cmake .. "-DCMAKE_CXX_FLAGS=-Wl,-rpath -Wl,/import/GCC/12.2.1/lib64" -DCMAKE_CXX_COMPILER=/import/GCC/12.2.1/bin/g++
 
 clean:
 	rm -rf build
