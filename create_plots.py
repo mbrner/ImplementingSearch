@@ -183,7 +183,7 @@ g = sns.catplot(
     errorbar="sd", palette="dark", alpha=.6, height=6, hue_order=hue_order
 )
 g.despine(left=True)
-g.set_axis_labels("Number of Queries", "Peak Memory / MB")
+g.set_axis_labels("Number of Tolerated Errors", "Peak Memory / MB")
 g.ax.set(title=query_file_title.format(query_length=query_length, query_limit=query_limit), ylim=(0, 3000))
 g.legend.set_title("Method")
 g.fig.savefig(f'{base_name}_mem_filter_query_length_{query_length:04d}_query_limit_{query_limit:04d}.png', dpi=200., bbox_inches='tight')
@@ -196,12 +196,24 @@ g = sns.catplot(
     errorbar="sd", palette="dark", alpha=.6, height=6, hue_order=hue_order
 )
 g.despine(left=True)
-g.set_axis_labels("Number of Queries", "Duration / ms")
+g.set_axis_labels("Number of Tolerated Errors", "Duration / ms")
 g.ax.set(yscale="log", title=query_file_title.format(query_length=query_length, query_limit=query_limit), ylim=time_limit)
 g.legend.set_title("Method")
 g.fig.savefig(f'{base_name}_time_filter_query_length_{query_length:04d}_query_limit_{query_limit:04d}.png', dpi=200., bbox_inches='tight')
 plt.close(g.fig)
 
+# search hits plot
+g = sns.catplot(
+    data=df_a2_p2, kind="bar",
+    x='error_total', y="hits", hue="method",
+    errorbar="sd", palette="dark", alpha=.6, height=6, hue_order=hue_order
+)
+g.despine(left=True)
+g.set_axis_labels("Number of tolerated errors", "Number of search hits")
+g.ax.set(yscale="log", title=query_file_title.format(query_length=query_length, query_limit=query_limit), ylim=(1e2, 1e5))
+g.legend.set_title("Method")
+g.fig.savefig(f'{base_name}_number_of_hits_{query_length:04d}_query_limit_{query_limit:04d}.png', dpi=200., bbox_inches='tight')
+plt.close(g.fig)
 
 # In[ ]:
 
