@@ -69,11 +69,12 @@ int main(int argc, char const* const* argv) {
     divsufsort(str, suffixarray.data(), reference.size());
     unsigned int total_count = 0;
     auto t1 = high_resolution_clock::now();
+    ////
     for (auto& q : queries) {
-        // apply binary search and find q  in reference using binary search on `suffixarray`
-        // using the naive approach
         unsigned long int left = 0;
         unsigned long int right = reference.size() - 1;
+        unsigned int matches = 0;
+
         while (left <= right) {
             auto mid = (left + right) / 2;
             bool equal = true;
@@ -84,9 +85,39 @@ int main(int argc, char const* const* argv) {
                 }
             }
             if (equal) {
-                total_count++;
-                // q found at position suffixarray[mid]
-                // seqan3::debug_stream << "Query: " << q << " occurs at position: suffixarray[mid] & mid=" << mid << std::endl;
+                matches++;
+                int temp = mid - 1;
+                while (temp >= 0) {
+                    bool equal_temp = true;
+                    for (size_t i = 0; i < q.size(); ++i) {
+                        if (q[i] != reference[suffixarray[temp] + i]) {
+                            equal_temp = false;
+                            break;
+                        }
+                    }
+                    if (equal_temp) {
+                        matches++;
+                        temp--;
+                    } else {
+                        break;
+                    }
+                }
+                temp = mid + 1;
+                while (temp < reference.size()) {
+                    bool equal_temp = true;
+                    for (size_t i = 0; i < q.size(); ++i) {
+                        if (q[i] != reference[suffixarray[temp] + i]) {
+                            equal_temp = false;
+                            break;
+                        }
+                    }
+                    if (equal_temp) {
+                        matches++;
+                        temp++;
+                    } else {
+                        break;
+                    }
+                }
                 break;
             } else {
                 bool less = true;
@@ -105,7 +136,9 @@ int main(int argc, char const* const* argv) {
                 }
             }
         }
+        total_count += matches;
     }
+    ////
     auto t2 = high_resolution_clock::now();
     auto t_diff = std::chrono::duration_cast<std::chrono::nanoseconds>(t2 - t1);
     std::cout << ">>>>>" << std::endl;
