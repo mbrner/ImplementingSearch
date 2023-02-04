@@ -68,13 +68,12 @@ int main(int argc, char const* const* argv) {
     auto t1 = high_resolution_clock::now();
     seqan3::configuration const cfg = seqan3::search_cfg::max_error_total{seqan3::search_cfg::error_count{max_error_total}};
     auto results = search(queries, index, cfg);
-    
-    auto t2 = high_resolution_clock::now();  
-    auto t_diff = std::chrono::duration_cast<std::chrono::nanoseconds>(t2 - t1);
     unsigned int total_count = 0;
     for (auto && result : results) {   
         total_count++;
     }
+    auto t2 = high_resolution_clock::now();  
+    auto t_diff = std::chrono::duration_cast<std::chrono::nanoseconds>(t2 - t1);
     std::cout << ">>>>>" << std::endl;
     std::cout << "> Method: FM-Index" << std::endl;
     std::cout << "> Query File: " << query_file << std::endl;
