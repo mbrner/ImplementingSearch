@@ -1,6 +1,9 @@
 #include <divsufsort.h>
 #include <sstream>
+<<<<<<< HEAD
 #include <filesystem>
+=======
+>>>>>>> 26fe2592c2ff45258d9fe441a1f404858474fa31
 
 #include <seqan3/alphabet/nucleotide/dna5.hpp>
 #include <seqan3/argument_parser/all.hpp>
