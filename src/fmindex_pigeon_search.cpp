@@ -122,6 +122,7 @@ int main(int argc, char const* const* argv) {
                     if (verify(ref, query, start, end))
                     {
                         total_count++;
+                        break;
                     }
                 }
             }
