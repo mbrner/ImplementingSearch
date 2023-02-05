@@ -5,48 +5,52 @@ ifeq ($(PYTHON_VERSION),)
     PYTHON_VERSION := $(shell command -v python3)
 endif
 
-all: experiment_results_assignment1.csv experiment_results_assignment2_part1.csv experiment_results_assignment2_part2.csv
+all: results/experiment_results_assignment1.csv results/experiment_results_assignment2_part1.csv results/experiment_results_assignment2_part2.csv
 
 # Assignment 2
-assignment_2: experiment_results_assignment2_part1.csv experiment_results_assignment2_part2.csv
+assignment_2: results/experiment_results_assignment2_part1.csv results/experiment_results_assignment2_part2.csv
 
 ## Part 2
-experiment_results_assignment2_part2.txt: run_experiments_assignment2_part2.sh fm_hg38_full.index $(ALL_BINARIES)
-	./run_experiments_assignment2_part2.sh > experiment_results_assignment2_part2.txt
+results/experiment_results_assignment2_part2.txt: run_experiments_assignment2_part2.sh results/fm_hg38_full.index $(ALL_BINARIES)
+	./run_experiments_assignment2_part2.sh > results/experiment_results_assignment2_part2.txt
 
-experiment_results_assignment2_part2.csv: experiment_results_assignment2_part2.txt
-	$(PYTHON_VERSION) convert_to_csv.py experiment_results_assignment2_part2.txt
+results/experiment_results_assignment2_part2.csv: results/experiment_results_assignment2_part2.txt
+	$(PYTHON_VERSION) convert_to_csv.py results/experiment_results_assignment2_part2.txt
 
-fm_hg38_full.index: build/bin/fmindex_construct grch38/GCF_000001405.26_GRCh38_genomic.fna.gz
-	build/bin/fmindex_construct --reference grch38/GCF_000001405.26_GRCh38_genomic.fna.gz --index fm_hg38_full.index
+results/fm_hg38_full.index: build/bin/fmindex_construct grch38/GCF_000001405.26_GRCh38_genomic.fna.gz
+	build/bin/fmindex_construct --reference grch38/GCF_000001405.26_GRCh38_genomic.fna.gz --index results/fm_hg38_full.index
 
 grch38/GCF_000001405.26_GRCh38_genomic.fna.gz:
 	rsync --copy-links --times --verbose rsync://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/001/405/GCF_000001405.26_GRCh38/GCF_000001405.26_GRCh38_genomic.fna.gz grch38/
 
 ## Part 1
 
-experiment_results_assignment2_part1.csv: experiment_results_assignment2_part1.txt
-	$(PYTHON_VERSION) convert_to_csv.py experiment_results_assignment2_part1.txt
-experiment_results_assignment2_part1.txt: run_experiments_assignment2_part1.sh fm_hg38.index $(ALL_BINARIES)
-	./run_experiments_assignment2_part1.sh > experiment_results_assignment2_part1.txt
+results/experiment_results_assignment2_part1.csv: results/experiment_results_assignment2_part1.txt
+	$(PYTHON_VERSION) convert_to_csv.py results/experiment_results_assignment2_part1.txt
+results/experiment_results_assignment2_part1.txt: run_experiments_assignment2_part1.sh results/fm_hg38.index $(ALL_BINARIES)
+	./run_experiments_assignment2_part1.sh > results/experiment_results_assignment2_part1.txt
 
 # Assignment 1
-assignment_1: experiment_results_assignment1.csv
+assignment_1: results/experiment_results_assignment1.csv
 
-experiment_results_assignment1.csv: experiment_results_assignment1.txt
-	$(PYTHON_VERSION) convert_to_csv.py experiment_results_assignment1.txt
-experiment_results_assignment1.txt: run_experiments_assignment1.sh fm_hg38.index $(ALL_BINARIES)
-	./run_experiments_assignment1.sh > experiment_results_assignment1.txt
-fm_hg38.index: build/bin/fmindex_construct data/hg38_partial.fasta.gz
-	build/bin/fmindex_construct --reference data/hg38_partial.fasta.gz --index fm_hg38.index
+results/experiment_results_assignment1.csv: results/experiment_results_assignment1.txt
+	$(PYTHON_VERSION) convert_to_csv.py results/experiment_results_assignment1.txt
+results/experiment_results_assignment1.txt: run_experiments_assignment1.sh results/fm_hg38.index $(ALL_BINARIES)
+	./run_experiments_assignment1.sh > results/experiment_results_assignment1.txt
+results/fm_hg38.index: build/bin/fmindex_construct data/hg38_partial.fasta.gz
+	build/bin/fmindex_construct --reference data/hg38_partial.fasta.gz --index results/fm_hg38.index
 
 # General
-$(ALL_BINARIES): build $(ALL_SRCS) 
-	cd build && make -j 4
+$(ALL_BINARIES): build $(ALL_SRCS) results
+	cd build && make
+
+results:
+	mkdir results
 
 build:
 	mkdir build
 	cd build && cmake .. "-DCMAKE_CXX_FLAGS=-Wl,-rpath -Wl,/import/GCC/12.2.1/lib64" -DCMAKE_CXX_COMPILER=/import/GCC/12.2.1/bin/g++
 
 clean:
-	rm -rf build
+	rm -rf build/
+	rm -rf results/

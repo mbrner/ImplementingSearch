@@ -7,7 +7,7 @@ for lim in ${query_limits[@]}; do
     for query in ${query_files[@]}; do
         for accepted_errors in ${total_errors[@]}; do
             for i in $(seq $repeats); do
-                /usr/bin/time -v ./build/bin/fmindex_search --index fm_hg38_full.index --query ${query} --query-lim ${lim} --error-total=${accepted_errors} 2>&1
+                /usr/bin/time -v ./build/bin/fmindex_search --index results/fm_hg38_full.index --query ${query} --query-lim ${lim} --error-total=${accepted_errors} 2>&1
             done
         done
     done
