@@ -7,7 +7,7 @@ for lim in ${query_limits[@]}; do
         for i in $(seq $repeats); do
             #/usr/bin/time -v ./build/bin/naive_search --reference data/hg38_partial.fasta.gz --query ${query} --query-lim ${lim} 2>&1
             /usr/bin/time -v ./build/bin/suffixarray_search --reference data/hg38_partial.fasta.gz --query ${query} --query-lim ${lim} 2>&1
-            /usr/bin/time -v ./build/bin/fmindex_search --index fm_hg38.index --query ${query} --query-lim ${lim} 2>&1
+            /usr/bin/time -v ./build/bin/fmindex_search --index results/fm_hg38.index --query ${query} --query-lim ${lim} 2>&1
         done
     done
 done
