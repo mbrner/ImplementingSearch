@@ -104,7 +104,7 @@ int main(int argc, char const* const* argv) {
     for (auto & query : queries)
     {
         std::vector<std::vector<seqan3::dna5>> parts(n_parts);
-        size_t part_length = query.size() / n_parts;
+        size_t part_length = (query.size() / n_parts) + 1;
         size_t nth_part;
 
         for (size_t i = 0; i < query.size(); ++i)
