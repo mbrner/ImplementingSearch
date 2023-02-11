@@ -1,5 +1,5 @@
-ALL_BINARIES = build/bin/fmindex_construct  build/bin/fmindex_search  build/bin/naive_search  build/bin/suffixarray_search  build/bin/fmindex_pigeon_search
-ALL_SRCS = src/fmindex_construct.cpp src/fmindex_search.cpp src/naive_search.cpp src/suffixarray_search.cpp src/fmindex_pigeon_search.cpp
+ALL_BINARIES = build/bin/fmindex_construct  build/bin/fmindex_search  build/bin/naive_search  build/bin/suffixarray_search  build/bin/fmindex_pigeon_search  build/bin/search_test
+ALL_SRCS = src/fmindex_construct.cpp src/fmindex_search.cpp src/naive_search.cpp src/suffixarray_search.cpp src/fmindex_pigeon_search.cpp src/search_test.cpp
 PYTHON_VERSION := $(shell command -v python)
 ifeq ($(PYTHON_VERSION),)
     PYTHON_VERSION := $(shell command -v python3)
@@ -7,6 +7,16 @@ endif
 
 all: results/experiment_results_assignment1.csv results/experiment_results_assignment2_part1.csv results/experiment_results_assignment2_part2.csv results/experiment_results_assignment3.csv
 
+
+
+# Poster
+poster: results/experiment_results_poster.csv
+
+results/experiment_results_poster.txt: run_experiments_poster.sh results/fm_hg38.index results/bi_fm_hg38.index $(ALL_BINARIES)
+	./run_experiments_poster.sh > results/experiment_results_poster.txt
+
+results/experiment_results_poster.csv: results/experiment_results_poster.txt
+	$(PYTHON_VERSION) convert_to_csv.py results/experiment_results_poster.txt
 
 # Assigment 3
 assignment3: results/experiment_results_assignment3.csv
@@ -49,6 +59,9 @@ results/experiment_results_assignment1.txt: run_experiments_assignment1.sh resul
 results/fm_hg38.index: build/bin/fmindex_construct data/hg38_partial.fasta.gz
 	build/bin/fmindex_construct --reference data/hg38_partial.fasta.gz --index results/fm_hg38.index
 
+results/bi_fm_hg38.index: build/bin/fmindex_construct data/hg38_partial.fasta.gz
+	build/bin/fmindex_construct --reference data/hg38_partial.fasta.gz --index results/bi_fm_hg38.index --bi-fm-index 1
+
 results/fm_hg38_full.index: build/bin/fmindex_construct grch38/GCF_000001405.26_GRCh38_genomic.fna.gz
 	build/bin/fmindex_construct --reference grch38/GCF_000001405.26_GRCh38_genomic.fna.gz --index results/fm_hg38_full.index
 
@@ -57,10 +70,12 @@ grch38/GCF_000001405.26_GRCh38_genomic.fna.gz:
 
 # General
 $(ALL_BINARIES): build $(ALL_SRCS) results
-	cd build && make
+	cd build && make -j 4
 
 results:
 	mkdir results
+
+compile: $(ALL_BINARIES)
 
 build:
 	mkdir build

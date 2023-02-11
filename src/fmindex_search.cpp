@@ -31,6 +31,9 @@ int main(int argc, char const* const* argv) {
     unsigned char max_error_total = 0;
     parser.add_option(max_error_total, max_error_total, "error-total", "number of total errors");
 
+    unsigned char bi_fm_index = 0;
+    parser.add_option(bi_fm_index, bi_fm_index, "bi-fm-index", "create a fm-index (0); create bi-fm-index (1)");
+
     try {
          parser.parse();
     } catch (seqan3::argument_parser_error const& ext) {
@@ -65,17 +68,25 @@ int main(int argc, char const* const* argv) {
     }
     //!TODO here adjust the number of searches
 
+    // configure to use hamming distance
+    seqan3::configuration const cfg = seqan3::search_cfg::max_error_total{seqan3::search_cfg::error_count{max_error_total}}
+                                        | seqan3::search_cfg::max_error_substitution{seqan3::search_cfg::error_count{max_error_total}}
+                                        | seqan3::search_cfg::max_error_insertion{seqan3::search_cfg::error_count{0}}
+                                        | seqan3::search_cfg::max_error_deletion{seqan3::search_cfg::error_count{0}};
     auto t1 = high_resolution_clock::now();
-    seqan3::configuration const cfg = seqan3::search_cfg::max_error_total{seqan3::search_cfg::error_count{max_error_total}};
     auto results = search(queries, index, cfg);
     unsigned int total_count = 0;
-    for (auto && result : results) {   
+    for (auto && result : results) {
         total_count++;
     }
     auto t2 = high_resolution_clock::now();  
     auto t_diff = std::chrono::duration_cast<std::chrono::nanoseconds>(t2 - t1);
     std::cout << ">>>>>" << std::endl;
-    std::cout << "> Method: FM-Index" << std::endl;
+    if (bi_fm_index == 1) {
+        std::cout << "> Method: Bi-FM-Index" << std::endl;
+    } else {
+        std::cout << "> Method: FM-Index" << std::endl;
+    }
     std::cout << "> Query File: " << query_file << std::endl;
     std::cout << "> Query Limit: " << query_length << std::endl;
     unsigned int max_error_total_int = (unsigned int) max_error_total;
